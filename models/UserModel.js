@@ -4,9 +4,10 @@ const Schema = mongoose.Schema;
 
 let UserSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  exercices: [{
-    type: Schema.Types.ObjectId,
-    ref: "Exercice"
+  log: [{
+    description: { type: String, required: true},
+    duration: { type: Number, required: true},
+    date: {type: Date, required: true, default : Date.now()},
   }]
 });
 

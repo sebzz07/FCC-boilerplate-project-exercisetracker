@@ -31,17 +31,24 @@ app.get('/home', (req, res) => {
 
 
 app.post('/api/users', async (req, res) => {
-  let found = await UserModel.find({ username: req.body.username });
 
-    console.log(found[0] == undefined);
-  
-  if (found[0] == undefined){
+  const findUsername = UserModel.findOne({ username: req.body.username });
+  // Query hasn't been executed yet, so Mongoose hasn't casted the filter.
+  findUsername.getFilter();
+  const dataFound = await findUsername.exec();
+
+  if (dataFound == null){
     UserController.create(req, res);
   } else {
     UserController.find(req, res);
   }
-  
+
 });
+
+app.post('/api/users/:_id/exercises', UserController.createExercice);
+
+
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
