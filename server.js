@@ -29,6 +29,12 @@ app.get('/home', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+app.get('/api/users', async (req, res) => {
+
+  UserController.all(req, res)
+
+});
+
 
 app.post('/api/users', async (req, res) => {
 

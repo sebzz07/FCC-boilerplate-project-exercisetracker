@@ -7,7 +7,9 @@ let UserController = {
     },
     all: async (req, res) => {
         let allUsers = await UserModel.find()
-        res.json(allUsers);
+        let response = [];
+        allUsers.forEach(user => response.push( {"username":user.username,  "_id":user._id}));
+        res.json(response);
     },
     create: async (req, res) => {
         let newUser = new UserModel(req.body);
@@ -19,13 +21,23 @@ let UserController = {
         res.json(foundUser);
     },
     createExercice: async (req, res) => {
+        
+    
         const exerciceToAdd = {
             description: req.body.description,
             duration: req.body.duration,
-            date: req.body.date? req.body.date : Date.now()};
-        let foundAndUpdate = await UserModel.findByIdAndUpdate({ _id: req.params._id },{$push: {log: exerciceToAdd} });
-        console.log(exerciceToAdd);
-        res.json(exerciceToAdd);
+            date: req.body.date? req.body.date : new Date().toISOString().slice(0, 10)
+        };
+
+        let found = await UserModel.find({ _id: req.body[":_id"]});
+        if(found){
+        
+            let foundAndUpdate = await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] },{$push: {log: exerciceToAdd} });
+            let response = {"username":found[0].username, ...exerciceToAdd,"_id":found[0]._id  };
+            res.json(response);
+            
+        }else{ res.json({'error':"id doesn't exist"}) }
+        
     },
 }
 module.exports = UserController;
