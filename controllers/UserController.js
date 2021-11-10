@@ -39,7 +39,7 @@ let UserController = {
         const exerciceToAdd = {
             description: req.body.description,
             duration: req.body.duration,
-            date: req.body.date ? req.body.date : new Date().toDateString()
+            date: req.body.date ? new Date(req.body.date).toDateString() : new Date().toDateString()
         };
 
         let found = await UserModel.find({ _id: req.params._id });
