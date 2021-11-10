@@ -53,6 +53,7 @@ app.post('/api/users', async (req, res) => {
 
 app.post('/api/users/:_id/exercises', UserController.createExercice);
 
+app.get('/api/users/:_id/logs', UserController.getAllExercices);
 
 
 

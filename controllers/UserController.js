@@ -17,27 +17,26 @@ let UserController = {
         res.json(savedUser);
     },
     getAllExercices: async (req, res) => {
-        let foundUser = await UserModel.find({ username: req.body.username }).populate("exercices");
+        let foundUser = await UserModel.find({ _id: req.params._id }).populate("log");
         res.json(foundUser);
     },
     createExercice: async (req, res) => {
-        
-    
         const exerciceToAdd = {
             description: req.body.description,
             duration: req.body.duration,
-            date: req.body.date? req.body.date : new Date().toISOString().slice(0, 10)
+            date: req.body.date? req.body.date : new Date().toDateString ()
         };
 
         let found = await UserModel.find({ _id: req.body[":_id"]});
         if(found){
         
-            let foundAndUpdate = await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] },{$push: {log: exerciceToAdd} });
-            let response = {"username":found[0].username, ...exerciceToAdd,"_id":found[0]._id  };
+            await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] },{ $inc : {'count' : 1}  ,$push: {log: exerciceToAdd} });
+            let response = {"username":found[0].username,"count":found[0].count +1 , ...exerciceToAdd,"_id":found[0]._id  };
             res.json(response);
             
         }else{ res.json({'error':"id doesn't exist"}) }
         
-    },
+    }
+
 }
 module.exports = UserController;
