@@ -35,20 +35,21 @@ let UserController = {
         res.json(response);
     },
     createExercice: async (req, res) => {
+        console.log("createExercice", req.params);
         const exerciceToAdd = {
             description: req.body.description,
             duration: req.body.duration,
             date: req.body.date ? req.body.date : new Date().toDateString()
         };
 
-        let found = await UserModel.find({ _id: req.body[":_id"] });
+        let found = await UserModel.find({ _id: req.params._id });
         if (found) {
 
-            await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] }, { $inc: { 'count': 1 }, $push: { log: exerciceToAdd } });
+            await UserModel.findByIdAndUpdate({ _id: req.params._id }, { $inc: { 'count': 1 }, $push: { log: exerciceToAdd } });
             let response = { "username": found[0].username, ...exerciceToAdd, "_id": found[0]._id };
             res.json(response);
 
-        } else { res.json({ 'error': "id doesn't exist" }) }
+        } else {res.status(500).json({ 'error': "id doesn't exist" }) }
 
     }
 
