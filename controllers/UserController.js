@@ -2,13 +2,13 @@ let UserModel = require("../models/UserModel.js");
 let UserController = {
     find: async (req, res) => {
         let found = await UserModel.find({ username: req.body.username });
-        let response =  {"username":found[0].username, "_id":found[0]._id }
+        let response = { "username": found[0].username, "_id": found[0]._id }
         res.json(response);
     },
     all: async (req, res) => {
         let allUsers = await UserModel.find()
         let response = [];
-        allUsers.forEach(user => response.push( {"username":user.username,  "_id":user._id}));
+        allUsers.forEach(user => response.push({ "username": user.username, "_id": user._id }));
         res.json(response);
     },
     create: async (req, res) => {
@@ -18,24 +18,38 @@ let UserController = {
     },
     getAllExercices: async (req, res) => {
         let foundUser = await UserModel.find({ _id: req.params._id }).populate("log");
-        res.json(foundUser);
+
+        let response = {            
+            "username": foundUser[0].username,
+            "count": foundUser[0].count,
+            "_id": foundUser[0]._id,
+            "log": []
+        };
+        foundUser[0].log.forEach(exercice => response.log.push(
+            {
+                "description": exercice.description,
+                "duration": exercice.duration,
+                "date": exercice.date.toDateString()
+            }));
+
+        res.json(response);
     },
     createExercice: async (req, res) => {
         const exerciceToAdd = {
             description: req.body.description,
             duration: req.body.duration,
-            date: req.body.date? req.body.date : new Date().toDateString ()
+            date: req.body.date ? req.body.date : new Date().toDateString()
         };
 
-        let found = await UserModel.find({ _id: req.body[":_id"]});
-        if(found){
-        
-            await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] },{ $inc : {'count' : 1}  ,$push: {log: exerciceToAdd} });
-            let response = {"username":found[0].username,"count":found[0].count +1 , ...exerciceToAdd,"_id":found[0]._id  };
+        let found = await UserModel.find({ _id: req.body[":_id"] });
+        if (found) {
+
+            await UserModel.findByIdAndUpdate({ _id: req.body[":_id"] }, { $inc: { 'count': 1 }, $push: { log: exerciceToAdd } });
+            let response = { "username": found[0].username, ...exerciceToAdd, "_id": found[0]._id };
             res.json(response);
-            
-        }else{ res.json({'error':"id doesn't exist"}) }
-        
+
+        } else { res.json({ 'error': "id doesn't exist" }) }
+
     }
 
 }
