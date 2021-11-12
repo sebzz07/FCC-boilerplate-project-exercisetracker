@@ -45,9 +45,13 @@ let UserController = {
         let found = await UserModel.find({ _id: req.params._id });
         if (found) {
 
-            let query = await UserModel.findByIdAndUpdate({ _id: req.params._id }, { $inc: { 'count': 1 }, $push: { log: exerciceToAdd } });
-            console.log(query);
-            let response = { "username": found[0].username, ...exerciceToAdd, "_id": query.log._id };
+            await UserModel.findByIdAndUpdate({ _id: req.params._id }, { $inc: { 'count': 1 }, $push: { log: exerciceToAdd } });
+
+            let query = await UserModel.find({ _id: req.params._id });
+
+            let n = (query[0].count - 1);
+            console.log(query[0].log[1]);
+            let response = { "username": found[0].username, ...exerciceToAdd, "_id": query[0].log[n]._id };
             res.json(response);
 
         } else { res.status(500).json({ 'error': "id doesn't exist" }) }
