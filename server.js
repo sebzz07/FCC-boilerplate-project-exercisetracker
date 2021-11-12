@@ -43,7 +43,7 @@ app.post('/api/users', async (req, res) => {
   findUsername.getFilter();
   const dataFound = await findUsername.exec();
 
-  if (dataFound == null){
+  if (dataFound == null) {
     UserController.create(req, res);
   } else {
     UserController.find(req, res);
