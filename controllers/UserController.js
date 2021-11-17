@@ -41,7 +41,7 @@ let UserController = {
                 return response.log.push(
                     {
                         "description": exercice.description,
-                        "duration": exercice.duration,
+                        "duration": parseInt(exercice.duration,10),
                         "date": exercice.date.toDateString()
                     });
             }
@@ -55,7 +55,7 @@ let UserController = {
         console.log("createExercice", req.params);
         const exerciceToAdd = {
             description: req.body.description,
-            duration: req.body.duration,
+            duration: parseInt(req.body.duration,10),
             date: req.body.date ? new Date(req.body.date).toDateString() : new Date().toDateString()
         };
 
