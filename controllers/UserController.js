@@ -17,6 +17,12 @@ let UserController = {
         res.json(savedUser);
     },
     getAllExercices: async (req, res) => {
+        let from = new Date(req.query.from).getTime()?new Date(req.query.from).getTime(): -Infinity;
+        let to = new Date(req.query.to).getTime()?new Date(req.query.to).getTime(): Infinity ;
+        let limit = req.query.limit?req.query.limit: Infinity ;
+        let countOfLimit = 0;
+
+        
         let foundUser = await UserModel.find({ _id: req.params._id }).populate("log");
 
         let response = {
@@ -25,12 +31,23 @@ let UserController = {
             "_id": foundUser[0]._id,
             "log": []
         };
-        foundUser[0].log.forEach(exercice => response.log.push(
-            {
-                "description": exercice.description,
-                "duration": exercice.duration,
-                "date": exercice.date.toDateString()
-            }));
+
+        
+        foundUser[0].log.forEach(exercice => {
+            
+            let dateOfExercice= new Date(exercice.date).getTime();
+            if (dateOfExercice >= from && dateOfExercice <= to && countOfLimit < limit) {
+                countOfLimit++;
+                return response.log.push(
+                    {
+                        "description": exercice.description,
+                        "duration": exercice.duration,
+                        "date": exercice.date.toDateString()
+                    });
+            }
+            
+            }
+            );
 
         res.json(response);
     },
